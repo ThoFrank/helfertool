@@ -3,15 +3,8 @@
 name: Build container
 
 on:
-  push:
-    tags:
-    - 'v[0-9]+.[0-9]+.[0-9]+'
-  workflow_dispatch:
+  push
 
-env:
-  CONTAINER_REGISTRY: docker.io
-  CONTAINER_REGISTRY_USER: ${{ secrets.CONTAINER_REGISTRY_USER }}
-  CONTAINER_REGISTRY_PASSWORD: ${{ secrets.CONTAINER_REGISTRY_PASSWORD }}
 
 jobs:
   build:
@@ -23,17 +16,15 @@ jobs:
     - uses: actions/checkout@v2
 
     - name: Build container
-      run: ./scripts/container.sh build
+      run: docker build -t ghcr.io/thofrank/helfertool .
 
-    - name: Test container
-      run: ./scripts/container.sh autotest
-
-    - name: Login to registroy
-      uses: redhat-actions/podman-login@v1
+    - name: 'Login to GitHub Container Registry'
+      uses: docker/login-action@v3
       with:
-        registry: ${{ env.CONTAINER_REGISTRY }}
-        username: ${{ env.CONTAINER_REGISTRY_USER }}
-        password: ${{ env.CONTAINER_REGISTRY_PASSWORD }}
+        registry: ghcr.io
+        username: ${{github.actor}}
+        password: ${{secrets.GITHUB_TOKEN}}
 
-    - name: Push container
-      run: ./scripts/container.sh push
+    - name: Upload Container to Registry
+      run : |
+        docker push ghcr.io/thofrank/helfertool:latest
