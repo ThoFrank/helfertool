@@ -31,6 +31,8 @@ xlsxwriter~=3.2.9
 # dependencies of dependencies
 # celery crashs if old celerybeat-schedule file exists and pytz is missing...
 pytz~=2025.1
+# django-prose-editor 0.22.x still imports the pre-4.0 global importmap object.
+django-js-asset<4
 
 # old packages, not used anymore but included in migrations
 django-bleach~=3.1.0
